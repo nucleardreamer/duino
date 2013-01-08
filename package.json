@@ -13,7 +13,10 @@
   },
   "dependencies": {
     "serialport": "*",
-    "colors": "*"
+    "colors": "*",
+    "express": "*",
+    "jade": "*",
+    "request": "*"
   },
   "devDependencies": {}
 }
