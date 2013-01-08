@@ -1,0 +1,19 @@
+{
+  "author": "flynn",
+  "name": "duino",
+  "description": "awe yeah stuff",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/nucleardreamer/duino.git"
+  },
+  "main": "index.js",
+  "engines": {
+    "node": "*"
+  },
+  "dependencies": {
+    "serialport": "*",
+    "colors": "*"
+  },
+  "devDependencies": {}
+}
