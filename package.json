@@ -9,14 +9,16 @@
   },
   "main": "index.js",
   "engines": {
-    "node": "*"
+    "node": "0.8.x",
+    "npm": "1.1.x"
   },
   "dependencies": {
     "serialport": "*",
     "colors": "*",
-    "express": "*",
-    "jade": "*",
-    "request": "*"
+    "express": "3.0.x",
+    "request": "*",
+    "socket.io": "0.9.x"
   },
   "devDependencies": {}
 }
+  
