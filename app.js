@@ -28,7 +28,7 @@ var rangesensor = {
 	data: 0
 }
 
-server.listen(process.env.VCAP_APP_PORT || 8080);
+server.listen(8080);
 
 app.get('/', function (req, res) {
 
@@ -48,9 +48,8 @@ io.sockets.on('connection', function (socket) {
 	},10)
 	
 });
-ping.on('read', function(err, value) {
-	value = +value;
-	console.log(value);
+ping.on('read', function(err, value, data) {
+	console.dir(arguments);
 	rangesensor.data = value;
 });
 sensor.on('read', function(err, value) {

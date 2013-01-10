@@ -16,7 +16,7 @@
 				//main.changeCircle(data.photo.data);
 			}
 			if(data.range){
-				console.log(data.range.data);
+				main.changeCircleRange(data.range.data);
 			}
 		});
 			  
@@ -58,7 +58,7 @@
 			}	
 		}
 		
-		Lens.prototype.changeCircle = function(sensor){
+		Lens.prototype.changeCirclePhoto = function(sensor){
 			var _this = this;
 			sensor = sensor * 1;
 			if(sensor <= 980){
@@ -68,6 +68,13 @@
 				//$(_this._opts.container).css('width', '1200px'); 
 				$('.'+_this._opts.circle).css('-webkit-transform','scale(1)')
 			}
+		}
+		Lens.prototype.changeCircleRange = function(sensor){
+			var _this = this;
+			sensorInches = (sensor * 1) / 74 / 2;
+			sensorCentimeters = (sensor * 1) / 29 / 2;
+			console.log(sensorCentimeters);
+			$('.'+_this._opts.circle).css('-webkit-transform','scale(.'+sensorInches.replace('.','')+')')
 		}
 		
 		$(document).ready( function (){
@@ -103,7 +110,7 @@
 			
 		}
 		.circle{
-			-webkit-transition: all 1.3s ease .25;
+			-webkit-transition: all .1s ease .25;
 			background-color: #fff;
 			position: absolute;
 			margin-left: 0;
@@ -179,10 +186,10 @@
 			left: 100%;
 		}
 		.circle:nth-child(4),.circle:nth-child(5),.circle:nth-child(6),.circle:nth-child(8),.circle:nth-child(9),.circle:nth-child(10){
-			-webkit-transition: all 1.3s ease 0s;		
+			-webkit-transition: all .1s ease 0s;		
 		}
 		.circle:nth-child(7){
-			-webkit-transition: all 1.3s ease .15s;
+			-webkit-transition: all .1s ease .15s;
 		}
 	</style>
 	
