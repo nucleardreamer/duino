@@ -13,7 +13,10 @@
 		
 		socket.on('sensor', function (data) {
 			if(data.photo){
-				main.changeCircle(data.photo.data);
+				//main.changeCircle(data.photo.data);
+			}
+			if(data.range){
+				console.log(data.range.data);
 			}
 		});
 			  
@@ -50,6 +53,7 @@
 						width: size + 'px',
 						height: size + 'px'
 					})
+					.css('-webkit-border-radius',size + 'px')
 					.appendTo('.'+_this._opts.container);	
 			}	
 		}
@@ -99,7 +103,7 @@
 			
 		}
 		.circle{
-			-webkit-transition: all 1.3s ease;
+			-webkit-transition: all 1.3s ease .25;
 			background-color: #fff;
 			position: absolute;
 			margin-left: 0;
@@ -109,7 +113,7 @@
 			width: 100%;
 			position: absolute;
 			z-index: 2;
-			background-image: url('http://i.imgur.com/ypAP2.png');
+			/* background-image: url('http://i.imgur.com/ypAP2.png'); */
 			background-size: cover;
 		}
 		.circle .content{
@@ -153,7 +157,6 @@
 		.circle:nth-child(8){
 			top: 100%;
 			left: 50%;
-			-webkit-transition: all 1.3s ease .1s;
 		}
 		.circle:nth-child(9){
 			top: 25%;
@@ -174,6 +177,12 @@
 		.circle:nth-child(13){
 			top: 100%;
 			left: 100%;
+		}
+		.circle:nth-child(4),.circle:nth-child(5),.circle:nth-child(6),.circle:nth-child(8),.circle:nth-child(9),.circle:nth-child(10){
+			-webkit-transition: all 1.3s ease 0s;		
+		}
+		.circle:nth-child(7){
+			-webkit-transition: all 1.3s ease .15s;
 		}
 	</style>
 	

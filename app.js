@@ -1,3 +1,4 @@
+
 var io = require('socket.io');
 var express = require('express');
 var app = require('express')(),
@@ -14,11 +15,20 @@ sensor = new arduino.Sensor({
 	pin: 'A0'
 });
 
+ping = new arduino.Ping({
+	board: board,
+	pin: '7'
+});
+
 var photosensor = {
 	data: 0
 }
 
-server.listen(8080);
+var rangesensor = {
+	data: 0
+}
+
+server.listen(process.env.VCAP_APP_PORT || 8080);
 
 app.get('/', function (req, res) {
 
@@ -32,14 +42,19 @@ io.sockets.on('connection', function (socket) {
 	
 	setInterval(function(){
 		socket.emit('sensor',{
-			photo: photosensor
+			photo: photosensor,
+			range: rangesensor
 		});
 	},10)
 	
 });
-
-sensor.on('read', function(err, value) {
+ping.on('read', function(err, value) {
 	value = +value;
 	console.log(value);
+	rangesensor.data = value;
+});
+sensor.on('read', function(err, value) {
+	value = +value;
+	//console.log(value);
 	photosensor.data = value;
 });
