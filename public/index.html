@@ -3,7 +3,88 @@
 	<script src="http://localhost:8080/socket.io/socket.io.js"></script>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 	<script type="text/javascript" src="https://raw.github.com/BorisMoore/jsrender/master/jsrender.js"></script>
-	
+	<script type="text/javascript">
+ 
+        var dot = {
+            columns: [],
+            circles: [],
+            makeColumn: function (type, height, translateX, translateY, radius, color) {
+                var svg = "http://www.w3.org/2000/svg";
+                var group = document.createElementNS(svg, "g");
+                dot.parentElement.appendChild(group);
+                var column = {
+                    type: type,
+                    group: group,
+                    x: translateX,
+                    y: translateY
+                };
+                dot.moveColumn(column, translateX);
+ 
+                makeCircle = function (cx, cy, r, fill) {
+                    var circle = document.createElementNS(svg, "circle");
+                    group.appendChild(circle);
+                    circle.setAttributeNS(null, "cx", cx);
+                    circle.setAttributeNS(null, "cy", cy);
+                    circle.setAttributeNS(null, "r", r);
+                    circle.setAttributeNS(null, "fill", fill);
+ 
+                    dot.circles.push(circle);
+                }
+ 
+                if (type) {
+                    makeCircle(0, 0, radius, color);
+                    makeCircle(0, height * .5, radius, color);
+                    makeCircle(0, height, radius, color);
+                } else {
+                    makeCircle(0, height * .25, radius, color);
+                    makeCircle(0, height * .75, radius, color);
+                }
+ 
+                dot.columns.push(column);
+            },
+            moveColumn: function (column, x) {
+                column.x = x;
+                column.group.setAttributeNS(null, "transform", "translate(" + column.x + "," + column.y + ")");
+            },
+            setRadius: function (r) {
+                dot.radius = r;
+                for (var i = 0; i < dot.circles.length; i++) {
+                    var circle = dot.circles[i];
+                    circle.setAttributeNS(null, "r", r);
+                }
+ 
+            },
+            bigger: function () {
+                dot.setRadius(dot.radius + 1);
+            },
+            smaller: function () {
+                dot.setRadius(dot.radius - 1);
+            },
+            scroll: function () {
+                for (var i = 0; i < dot.columns.length; i++) {
+                    var column = dot.columns[i];
+                    var x = column.x + dot.distance;
+                    if (x > (dot.width - 2 * dot.clip) * 1.25 + dot.clip) {
+                        x = (dot.width - 2 * dot.clip) * -.25 + dot.clip;
+                    }
+                    dot.moveColumn(column, x);
+                }
+            },
+            tick: function () {
+                dot.scroll();
+                window.setTimeout(dot.tick, dot.delay);
+            },
+            delay: 17 * 1,
+            clip: 160,
+            width: 0,
+            height: 0,
+            radius: 10,
+            distance: 4,
+            parentElement: null
+        };
+ 
+ 
+    </script>
 	<script type="text/javascript">
 		var socket = io.connect('http://localhost:8080');
 
@@ -73,17 +154,60 @@
 			var _this = this;
 			sensorInches = (sensor * 1) / 74 / 2;
 			sensorCentimeters = (sensor * 1) / 29 / 2;
-			console.log(sensorCentimeters);
-			$('.'+_this._opts.circle).css('-webkit-transform','scale(.'+sensorInches.replace('.','')+')')
+			
+			
+			var min = 12;
+			var max = 72;
+			sensorInches = (sensorInches < min) ? min : sensorInches;
+			sensorInches = (sensorInches > max) ? max : sensorInches;
+			
+			console.log(sensorInches);
+			sensorInches = 1 - ((sensorInches - 12) / 60);
+			
+			//sensorInches = (sensorInches < .1) ? .1 : sensorInches;
+			
+			//dot.setRadius(70);
+			
+			$('.'+_this._opts.circle)
+				.css('-webkit-transform','scale('+sensorInches+')')
+				//.css('-webkit-border-radius',sensorInches+'px')
+				//.css('width',sensorInches+'px')
+				//.css('height',sensorInches+'px');
 		}
 		
-		$(document).ready( function (){
+		
+		
+		$(document).ready(
+        function (e) {
+	        if(false){
+	            dot.parentElement = document.getElementById("dotCanvas");
+	            dot.width = parseInt(dot.parentElement.getAttributeNS(null, "width"), 10);
+	            dot.height = parseInt(dot.parentElement.getAttributeNS(null, "height"), 10);
+	            var toggle = false;
+	            for (var i = -25; i <= 100; i += 25) {
+	                var x = (dot.width - 2 * dot.clip) * (i / 100) + dot.clip;
+	                dot.makeColumn(toggle, dot.height - 2 * dot.clip, x, dot.clip, 20, "white");
+	                toggle = !toggle;
+	            }
+	            dot.tick();
+	            
+			}
 			main = new Lens({
 				container: "inner",
 				circle: "circle"
 			});
-			
-		});
+        });
+ 		
+	    $(document).keypress(
+	        function (e) {
+	            if (e.keyCode == 44) {
+	                dot.smaller();
+	            }
+	            if (e.keyCode == 46) {
+	                dot.bigger();
+	            }
+	        }
+	    );
 	</script>
 	<style type="text/css">
 		body,html{
@@ -96,21 +220,24 @@
 			
 		}
 		.outer{
-			width:60%;
-			height: 60%;
-			margin: 5% 0% 0% 12%;
+			width: 75%;
+			height: 73%;
+			margin: 5% 2% 0% 7%;
+			z-index: 2;
+			position: absolute;
 		}
 		.inner{
 			height: 100%;
 			width: 100%;
-			background-color: #000;
+			
 			-webkit-transition: all .5s ease;
 			position: relative;
 			
 			
 		}
 		.circle{
-			-webkit-transition: all .1s ease .25;
+			-webkit-transition: all 1.5s ease;
+			-webkit-transform-origin: 50% 50%;
 			background-color: #fff;
 			position: absolute;
 			margin-left: 0;
@@ -186,10 +313,10 @@
 			left: 100%;
 		}
 		.circle:nth-child(4),.circle:nth-child(5),.circle:nth-child(6),.circle:nth-child(8),.circle:nth-child(9),.circle:nth-child(10){
-			-webkit-transition: all .1s ease 0s;		
+			/* -webkit-transition: all .5s ease; * /		
 		}
 		.circle:nth-child(7){
-			-webkit-transition: all .1s ease .15s;
+			/* -webkit-transition: all .5s ease; */
 		}
 	</style>
 	
@@ -204,8 +331,14 @@
 
 	</head>
 	<body>
+	
 		<div class="outer">
 			<div class="inner"></div>	
 		</div>
+	<!--
+		<div style="margin-left:auto; margin-right:auto; width: 1280px; margin-top: -25px; position: absolute; top:0; z-index: 1" >
+		<svg style="background-color:Black;" id="dotCanvas" xmlns="http://www.w3.org/2000/svg" version="1.1" x="50" y="50" width="1280" height="880">
+		</svg>
+	-->
 	</body>
 </html>

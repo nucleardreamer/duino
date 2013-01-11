@@ -1,0 +1,219 @@
+<html>
+	<head>
+	<script src="http://localhost:8080/socket.io/socket.io.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+	<script type="text/javascript" src="https://raw.github.com/BorisMoore/jsrender/master/jsrender.js"></script>
+	
+	<script type="text/javascript">
+		var socket = io.connect('http://localhost:8080');
+
+		socket.on('init', function (data) {
+			console.log(data);
+		});
+		
+		socket.on('sensor', function (data) {
+			if(data.photo){
+				//main.changeCircle(data.photo.data);
+			}
+			if(data.range){
+				main.changeCircleRange(data.range.data);
+			}
+		});
+			  
+		var main;
+		
+		var alertFallback = true;
+		if (typeof console === "undefined" || typeof console.log === "undefined") {
+			console = {};
+			if (alertFallback) {
+				console.log = function(msg) {
+					//alert(msg);
+				};
+			} else {
+				console.log = function() {};
+			}
+		}
+		
+		var Lens = function(opts){
+			this._opts = opts || [];
+			if(typeof this.init === 'function' && this.init) this.init()
+		};
+		
+		Lens.prototype.init = function (){
+			var _this = this;
+			_this.createCircles(150,13);
+		}
+		
+		Lens.prototype.createCircles = function(size, number){
+			var _this = this;
+			for(var i = 0; i < number; i++){
+				$($('#circleTmpl').render({}))
+					.addClass(_this._opts.circle)
+					.css({
+						width: size + 'px',
+						height: size + 'px'
+					})
+					.css('-webkit-border-radius',size + 'px')
+					.appendTo('.'+_this._opts.container);	
+			}	
+		}
+		
+		Lens.prototype.changeCirclePhoto = function(sensor){
+			var _this = this;
+			sensor = sensor * 1;
+			if(sensor <= 980){
+				//$(_this._opts.container).css('width','50px');
+				$('.'+_this._opts.circle).css('-webkit-transform','scale(.3)')
+			} else if(sensor >= 980){
+				//$(_this._opts.container).css('width', '1200px'); 
+				$('.'+_this._opts.circle).css('-webkit-transform','scale(1)')
+			}
+		}
+		Lens.prototype.changeCircleRange = function(sensor){
+			var _this = this;
+			sensorInches = (sensor * 1) / 74 / 2;
+			sensorCentimeters = (sensor * 1) / 29 / 2;
+			
+			
+			var min = 12;
+			var max = 72;
+			sensorInches = (sensorInches < min) ? min : sensorInches;
+			sensorInches = (sensorInches > max) ? max : sensorInches;
+			
+			console.log(sensorInches);
+			
+			$('.'+_this._opts.circle).css('-webkit-transform','scale(.'+sensorCentimeters+')')
+		}
+		
+		$(document).ready( function (){
+			main = new Lens({
+				container: "inner",
+				circle: "circle"
+			});
+			
+		});
+	</script>
+	<style type="text/css">
+		body,html{
+			height: 100%;
+			width: 100%;
+			margin: 0; padding: 0;
+			background-color: #000;
+		}
+		body{
+			
+		}
+		.outer{
+			width:60%;
+			height: 60%;
+			margin: 5% 0% 0% 12%;
+		}
+		.inner{
+			height: 100%;
+			width: 100%;
+			background-color: #000;
+			-webkit-transition: all .5s ease;
+			position: relative;
+			
+			
+		}
+		.circle{
+			-webkit-transition: all .1s ease .25;
+			background-color: #fff;
+			position: absolute;
+			margin-left: 0;
+		}
+		.circle .mask{
+			height: 100%;
+			width: 100%;
+			position: absolute;
+			z-index: 2;
+			/* background-image: url('http://i.imgur.com/ypAP2.png'); */
+			background-size: cover;
+		}
+		.circle .content{
+			height: 100%;
+			width: 100%;
+			position: absolute;
+			z-index: 1;
+		}
+		.circle .content img{
+			width: 100%;
+			height: 100%;
+		}
+		.circle:nth-child(1){
+			top: 0%;
+			left: 0%;
+		}
+		.circle:nth-child(2){
+			top: 50%;
+			left: 0%;
+		}
+		.circle:nth-child(3){
+			top: 100%;
+			left: 0%;
+		}
+		.circle:nth-child(4){
+			top: 25%;
+			left: 25%;
+		}
+		.circle:nth-child(5){
+			top: 75%;
+			left: 25%;
+		}
+		.circle:nth-child(6){
+			top: 0%;
+			left: 50%;
+		}
+		.circle:nth-child(7){
+			top: 50%;
+			left: 50%;
+		}
+		.circle:nth-child(8){
+			top: 100%;
+			left: 50%;
+		}
+		.circle:nth-child(9){
+			top: 25%;
+			left: 75%;
+		}
+		.circle:nth-child(10){
+			top: 75%;
+			left: 75%;
+		}
+		.circle:nth-child(11){
+			top: 0%;
+			left: 100%;
+		}
+		.circle:nth-child(12){
+			top: 50%;
+			left: 100%;
+		}
+		.circle:nth-child(13){
+			top: 100%;
+			left: 100%;
+		}
+		.circle:nth-child(4),.circle:nth-child(5),.circle:nth-child(6),.circle:nth-child(8),.circle:nth-child(9),.circle:nth-child(10){
+			-webkit-transition: all .1s ease 0s;		
+		}
+		.circle:nth-child(7){
+			-webkit-transition: all .1s ease .15s;
+		}
+	</style>
+	
+	<script id="circleTmpl" type="text/x-jsrender">
+		<div>
+			<div class="mask"></div>
+			<div class="content">
+				<!-- <img src="http://i.imgur.com/UmpOi.gif" /> -->
+			</div>
+		</div>
+	</script>
+
+	</head>
+	<body>
+		<div class="outer">
+			<div class="inner"></div>	
+		</div>
+	</body>
+</html>
