@@ -163,18 +163,38 @@
 			
 			console.log(sensorInches);
 			sensorInches = 1 - ((sensorInches - 12) / 60);
-			
+			sampler.insert(sensorInches);
 			//sensorInches = (sensorInches < .1) ? .1 : sensorInches;
 			
 			//dot.setRadius(70);
 			
 			$('.'+_this._opts.circle)
-				.css('-webkit-transform','scale('+sensorInches+')')
+				.css('-webkit-transform','scale('+sampler.average()+')')
 				//.css('-webkit-border-radius',sensorInches+'px')
 				//.css('width',sensorInches+'px')
 				//.css('height',sensorInches+'px');
 		}
 		
+		var sampler = {
+            range: 5,
+            samples: [],
+            insert: function (value) {
+                sampler.samples.push(value);
+                while (sampler.samples.length > sampler.range) {
+                    sampler.samples.shift();
+                }
+            },
+            average: function () {
+                if (sampler.samples.length < 1 || sampler.samples.length < sampler.range) {
+                    return 0;
+                }
+                var sum = 0;
+                for (var i = 0; i < sampler.samples.length; i++) {
+                    sum += sampler.samples[i];
+                }
+                return sum / sampler.samples.length;
+            }
+        };
 		
 		
 		$(document).ready(
