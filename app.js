@@ -45,7 +45,7 @@ io.sockets.on('connection', function (socket) {
 			photo: photosensor,
 			range: rangesensor
 		});
-	},10)
+	},100)
 	
 });
 ping.on('read', function(err, value, data) {

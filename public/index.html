@@ -79,7 +79,7 @@
             width: 0,
             height: 0,
             radius: 10,
-            distance: 4,
+            distance: 1,
             parentElement: null
         };
  
@@ -122,7 +122,7 @@
 		
 		Lens.prototype.init = function (){
 			var _this = this;
-			_this.createCircles(150,13);
+			_this.createCircles(120,13);
 		}
 		
 		Lens.prototype.createCircles = function(size, number){
@@ -152,31 +152,33 @@
 		}
 		Lens.prototype.changeCircleRange = function(sensor){
 			var _this = this;
-			sensorInches = (sensor * 1) / 74 / 2;
-			sensorCentimeters = (sensor * 1) / 29 / 2;
+			var sensorInches = (sensor * 1) / 74 / 2;
+			//sensorCentimeters = (sensor * 1) / 29 / 2;
 			
-			
-			var min = 12;
-			var max = 72;
+			var min = 72;
+			var max = 150;
 			sensorInches = (sensorInches < min) ? min : sensorInches;
 			sensorInches = (sensorInches > max) ? max : sensorInches;
 			
-			console.log(sensorInches);
-			sensorInches = 1 - ((sensorInches - 12) / 60);
+			sensorInches = 1 - ((sensorInches - min) / (max - min));
+			
 			sampler.insert(sensorInches);
-			//sensorInches = (sensorInches < .1) ? .1 : sensorInches;
+
+			dot.setRadius(20);
 			
-			//dot.setRadius(70);
+			sensor = sampler.average()
 			
+			sensor = (sensor < .1) ? .1 : sensor;
+			dot.distance = 1 - (sensor * 2);
 			$('.'+_this._opts.circle)
-				.css('-webkit-transform','scale('+sampler.average()+')')
+				.css('-webkit-transform','scale('+ sensor +')')
 				//.css('-webkit-border-radius',sensorInches+'px')
 				//.css('width',sensorInches+'px')
 				//.css('height',sensorInches+'px');
 		}
 		
 		var sampler = {
-            range: 5,
+            range: 15,
             samples: [],
             insert: function (value) {
                 sampler.samples.push(value);
@@ -199,7 +201,7 @@
 		
 		$(document).ready(
         function (e) {
-	        if(false){
+	        if(true){
 	            dot.parentElement = document.getElementById("dotCanvas");
 	            dot.width = parseInt(dot.parentElement.getAttributeNS(null, "width"), 10);
 	            dot.height = parseInt(dot.parentElement.getAttributeNS(null, "height"), 10);
@@ -256,7 +258,7 @@
 			
 		}
 		.circle{
-			-webkit-transition: all 1.5s ease;
+			-webkit-transition: all .5s ease;
 			-webkit-transform-origin: 50% 50%;
 			background-color: #fff;
 			position: absolute;
@@ -355,10 +357,10 @@
 		<div class="outer">
 			<div class="inner"></div>	
 		</div>
-	<!--
-		<div style="margin-left:auto; margin-right:auto; width: 1280px; margin-top: -25px; position: absolute; top:0; z-index: 1" >
+	
+		<div style="margin-left:auto; margin-right:auto; width: 1280px; margin-top: -42px; position: absolute; top:0; z-index: 1" >
 		<svg style="background-color:Black;" id="dotCanvas" xmlns="http://www.w3.org/2000/svg" version="1.1" x="50" y="50" width="1280" height="880">
 		</svg>
-	-->
+
 	</body>
 </html>
