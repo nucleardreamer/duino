@@ -67,6 +67,9 @@
                     if (x > (dot.width - 2 * dot.clip) * 1.25 + dot.clip) {
                         x = (dot.width - 2 * dot.clip) * -.25 + dot.clip;
                     }
+                    if (x < (dot.width - 2 * dot.clip) * -.25 + dot.clip) {
+                        x = (dot.width - 2 * dot.clip) * 1.25 + dot.clip;
+                    }
                     dot.moveColumn(column, x);
                 }
             },
